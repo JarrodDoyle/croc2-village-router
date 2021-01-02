@@ -25,17 +25,12 @@ def find_route(village, data):
 
 
 if __name__ == "__main__":
-    data = {}
     villages = ["sailor", "cossack", "caveman", "inca"]
     for village in villages:
         try:
             with open(f"INPUTS/{village}.csv") as f:
-                data[village] = list(
-                    csv.reader(f, delimiter=",", quoting=csv.QUOTE_NONNUMERIC)
-                )
+                data = list(csv.reader(f, delimiter=",", quoting=csv.QUOTE_NONNUMERIC))
         except:
             print(f"No {village}.csv found")
-
-    for k, v in data.items():
-        route = find_route(k, v)
-        print(f"{k}: {route}")
+            continue
+        print(f"{village}: {find_route(village, data)}")
