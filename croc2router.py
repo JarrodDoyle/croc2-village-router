@@ -2,26 +2,30 @@ import csv
 import itertools
 
 
+KART_PENALTY = 0.58
+
+
 def find_route(village, data):
     n = len(data)
 
     permutations = itertools.permutations(range(1, n))
     routes = {}
-    for permutation in permutations:
-        if permutation.index(1) < 3:
+    for p in permutations:
+        if p.index(1) < 3:
             continue
 
-        permutation = (0,) + permutation
+        p = (0,) + p
         path_length = 0
         for i in range(1, n):
-            cost = data[permutation[i - 1]][permutation[i]]
+            cost = data[p[i - 1]][p[i]]
             path_length += cost if cost > 0 else 1e99
 
-        routes[path_length] = permutation
+        if village == "caveman" and p.index(2) < min([p.index(3), p.index(4)]):
+            path_length += KART_PENALTY
 
-    shortest_path_length = min(routes.keys())
-    shortest_path = routes[shortest_path_length]
-    return (shortest_path_length, shortest_path)
+        routes[path_length] = p
+
+    return dict(sorted(routes.items(), key=lambda item: item[0]))
 
 
 if __name__ == "__main__":
@@ -29,8 +33,8 @@ if __name__ == "__main__":
     for village in villages:
         try:
             with open(f"INPUTS/{village}.csv") as f:
-                data = list(csv.reader(f, delimiter=",", quoting=csv.QUOTE_NONNUMERIC))
-        except:
-            print(f"No {village}.csv found")
+                data = [list(map(float, row)) for row in csv.reader(f, delimiter=",")]
+        except Exception as e:
+            print(e)
             continue
-        print(f"{village}: {find_route(village, data)}")
+        print(f"{village}: {list(find_route(village, data).items())[0:5]}")
