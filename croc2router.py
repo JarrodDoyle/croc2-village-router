@@ -55,15 +55,14 @@ def find_route(village, data):
         p = (0,) + p
         path_length = 0
         for i in range(1, n):
-            cost = data[p[i - 1]][p[i]]
-            path_length += cost if cost > 0 else 1e99
+            if (cost := data[p[i - 1]][p[i]]) == 0:
+                break
+            path_length += cost
+        else:
+            if village == "caveman" and p.index(2) < max([p.index(3), p.index(4)]):
+                path_length += KART_PENALTY
+            routes[", ".join([STAGE_NAMES[village][i] for i in p])] = path_length
 
-        if village == "caveman" and p.index(2) < max([p.index(3), p.index(4)]):
-            path_length += KART_PENALTY
-
-        routes[", ".join([STAGE_NAMES[village][i] for i in p])] = path_length
-
-    print(len(routes))
     return dict(sorted(routes.items(), key=lambda item: item[1]))
 
 
@@ -78,6 +77,6 @@ if __name__ == "__main__":
             continue
 
         results = list(find_route(village, data).items())
-        print(f"{village}: {len(results)}")
+        print(f"Number of valid {village} routes: {len(results)}")
         pprint(results[0:5])
         pprint(results[-5:])
