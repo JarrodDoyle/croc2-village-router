@@ -1,8 +1,46 @@
 import csv
 import itertools
+from pprint import pprint
 
 
 KART_PENALTY = 0.58
+STAGE_NAMES = {
+    "sailor": [
+        "Start",
+        "Squid",
+        "Cage",
+        "Chests",
+        "Boat",
+        "Thief",
+        "Crow",
+        "SMP",
+        "Jigsaw",
+        "Keith",
+    ],
+    "cossack": [
+        "SMP",
+        "Flavio",
+        "Iceblock",
+        "Roger",
+        "Train",
+        "Snowball",
+        "Glider",
+        "Jigsaw",
+        "Larry",
+    ],
+    "caveman": [
+        "SMP",
+        "Flytrap",
+        "Kart",
+        "Jungle",
+        "Mines",
+        "Pet",
+        "Fire",
+        "Jigsaw",
+        "Masher",
+    ],
+    "inca": [],
+}
 
 
 def find_route(village, data):
@@ -20,12 +58,13 @@ def find_route(village, data):
             cost = data[p[i - 1]][p[i]]
             path_length += cost if cost > 0 else 1e99
 
-        if village == "caveman" and p.index(2) < min([p.index(3), p.index(4)]):
+        if village == "caveman" and p.index(2) < max([p.index(3), p.index(4)]):
             path_length += KART_PENALTY
 
-        routes[path_length] = p
+        routes[", ".join([STAGE_NAMES[village][i] for i in p])] = path_length
 
-    return dict(sorted(routes.items(), key=lambda item: item[0]))
+    print(len(routes))
+    return dict(sorted(routes.items(), key=lambda item: item[1]))
 
 
 if __name__ == "__main__":
@@ -37,4 +76,8 @@ if __name__ == "__main__":
         except Exception as e:
             print(e)
             continue
-        print(f"{village}: {list(find_route(village, data).items())[0:5]}")
+
+        results = list(find_route(village, data).items())
+        print(f"{village}: {len(results)}")
+        pprint(results[0:5])
+        pprint(results[-5:])
